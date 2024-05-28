@@ -1,0 +1,44 @@
+ 
+name: Deploy React App
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+      working-directory: ./landing
+
+    - name: Run tests
+      run: npm test
+      working-directory: ./landing
+
+    - name: Build the project
+      run: npm run build
+      working-directory: ./landing
+
+    - name: Deploy to FTP server
+      uses: airvzxf/bpdeployment-action@latest
+      with:
+        ftp-server: ftp://YOUR_FTP_SERVER_ADDRESS
+        ftp-username: YOUR_FTP_USERNAME
+        ftp-password: YOUR_FTP_PASSWORD
+        local-dir: ./landing/build
+        remote-dir: /var/www/html
